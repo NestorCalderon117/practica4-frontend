@@ -170,3 +170,74 @@ export const miCuentaAPI = {
     return response.data;
   },
 };
+
+export const ticketsAPI = {
+  // Crear ticket
+  crearTicket: async (
+    titulo: string,
+    descripcion?: string,
+    categoria?: string,
+    prioridad?: number
+  ) => {
+    const response = await api.post('/tickets', {
+      titulo,
+      descripcion,
+      categoria,
+      prioridad,
+    });
+    return response.data;
+  },
+
+  // Listar tickets con filtros
+  obtenerTickets: async (filtros?: {
+    estado?: string;
+    categoria?: string;
+    prioridad?: number;
+    limit?: number;
+    offset?: number;
+  }) => {
+    const params = new URLSearchParams();
+    if (filtros?.estado) params.append('estado', filtros.estado);
+    if (filtros?.categoria) params.append('categoria', filtros.categoria);
+    if (filtros?.prioridad) params.append('prioridad', filtros.prioridad.toString());
+    if (filtros?.limit) params.append('limit', filtros.limit.toString());
+    if (filtros?.offset) params.append('offset', filtros.offset.toString());
+
+    const queryString = params.toString();
+    const response = await api.get(`/tickets${queryString ? `?${queryString}` : ''}`);
+    return response.data;
+  },
+
+  // Obtener ticket por ID
+  obtenerTicket: async (id: string) => {
+    const response = await api.get(`/tickets/${id}`);
+    return response.data;
+  },
+
+  // Actualizar ticket
+  actualizarTicket: async (
+    id: string,
+    datos: {
+      titulo?: string;
+      descripcion?: string;
+      categoria?: string;
+      estado?: string;
+      prioridad?: number;
+    }
+  ) => {
+    const response = await api.put(`/tickets/${id}`, datos);
+    return response.data;
+  },
+
+  // Eliminar ticket
+  eliminarTicket: async (id: string) => {
+    const response = await api.delete(`/tickets/${id}`);
+    return response.data;
+  },
+
+  // Obtener estadísticas
+  obtenerEstadisticas: async () => {
+    const response = await api.get('/tickets/estadisticas');
+    return response.data;
+  },
+};
