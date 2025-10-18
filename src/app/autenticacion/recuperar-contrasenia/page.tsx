@@ -34,8 +34,11 @@ export default function RecuperarContrasenia() {
           enrutador.push(`/autenticacion/verificar-codigo-recuperacion?correo=${encodeURIComponent(correo)}`);
         }, 2000);
       }
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Error al solicitar recuperación de contraseña');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message 
+        : 'Error al solicitar recuperación de contraseña';
+      setError(errorMessage || 'Error al solicitar recuperación de contraseña');
     } finally {
       setEstaCargando(false);
     }
