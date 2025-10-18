@@ -89,6 +89,23 @@ export default function Dashboard() {
                     </div>
                   )}
 
+                  {user?.role === 'CLIENTE' && (
+                    <div className="bg-orange-50 dark:bg-orange-900/20 p-6 rounded-lg">
+                      <h3 className="text-lg font-semibold text-orange-900 dark:text-orange-100 mb-2">
+                        Tickets de Soporte
+                      </h3>
+                      <p className="text-orange-700 dark:text-orange-300 mb-2">
+                        Gestiona tus solicitudes de soporte
+                      </p>
+                      <button
+                        onClick={() => router.push('/tickets')}
+                        className="mt-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded text-sm w-full"
+                      >
+                        Ver Mis Tickets
+                      </button>
+                    </div>
+                  )}
+
                   <div className="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-lg">
                     <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100 mb-2">
                       Seguridad
