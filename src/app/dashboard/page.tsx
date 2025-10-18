@@ -3,6 +3,7 @@
 import { useAuth } from '@/context/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useRouter } from 'next/navigation';
+import { Users, Ticket, Shield } from 'lucide-react';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -55,9 +56,12 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
-                    <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
-                      Información Personal
-                    </h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                        Información Personal
+                      </h3>
+                    </div>
                     <p className="text-blue-700 dark:text-blue-300">
                       Email: {user?.email}
                     </p>
@@ -77,23 +81,32 @@ export default function Dashboard() {
 
                   {user?.role === 'ADMIN' && (
                     <div className="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg">
-                      <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-2">
-                        Panel de Administración
-                      </h3>
-                      <p className="text-green-700 dark:text-green-300">
-                        Acceso completo al sistema
+                      <div className="flex items-center gap-2 mb-2">
+                        <Users className="w-5 h-5 text-green-600 dark:text-green-400" />
+                        <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
+                          Panel de Administración
+                        </h3>
+                      </div>
+                      <p className="text-green-700 dark:text-green-300 mb-2">
+                        Gestiona usuarios y auditoría del sistema
                       </p>
-                      <button className="mt-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
-                        Gestionar Usuarios
+                      <button
+                        onClick={() => router.push('/administracion')}
+                        className="mt-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm w-full"
+                      >
+                        Ir a Administración
                       </button>
                     </div>
                   )}
 
                   {user?.role === 'CLIENTE' && (
                     <div className="bg-orange-50 dark:bg-orange-900/20 p-6 rounded-lg">
-                      <h3 className="text-lg font-semibold text-orange-900 dark:text-orange-100 mb-2">
-                        Tickets de Soporte
-                      </h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Ticket className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                        <h3 className="text-lg font-semibold text-orange-900 dark:text-orange-100">
+                          Tickets de Soporte
+                        </h3>
+                      </div>
                       <p className="text-orange-700 dark:text-orange-300 mb-2">
                         Gestiona tus solicitudes de soporte
                       </p>
@@ -107,9 +120,12 @@ export default function Dashboard() {
                   )}
 
                   <div className="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-lg">
-                    <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100 mb-2">
-                      Seguridad
-                    </h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Shield className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100">
+                        Seguridad
+                      </h3>
+                    </div>
                     <p className="text-purple-700 dark:text-purple-300 mb-2">
                       Gestiona tu seguridad y privacidad
                     </p>
