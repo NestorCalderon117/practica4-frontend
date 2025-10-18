@@ -21,7 +21,7 @@ const ProtectedRoute = ({
   useEffect(() => {
     if (!isLoading) {
       if (requireAuth && !user) {
-        router.push('/auth/login');
+        router.push('/autenticacion/iniciar-sesion');
         return;
       }
 

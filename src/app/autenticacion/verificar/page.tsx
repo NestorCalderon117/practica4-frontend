@@ -6,101 +6,101 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import PublicRoute from '@/components/PublicRoute';
 
-export default function VerifyCode() {
-  const [code, setCode] = useState('');
+export default function Verificar() {
+  const [codigo, setCodigo] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutos
-  const [canResend, setCanResend] = useState(false);
+  const [exito, setExito] = useState('');
+  const [tiempoRestante, setTiempoRestante] = useState(300); // 5 minutos
+  const [puedeReenviar, setPuedeReenviar] = useState(false);
   const { verifyCode, resendMFA, isLoading } = useAuth();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const email = searchParams.get('email') || '';
-  const isEmailVerified = searchParams.get('verified') === 'true';
+  const enrutador = useRouter();
+  const parametrosBusqueda = useSearchParams();
+  const correo = parametrosBusqueda.get('correo') || '';
+  const correoVerificado = parametrosBusqueda.get('verificado') === 'true';
 
   useEffect(() => {
-    if (!email) {
-      router.push('/auth/login');
+    if (!correo) {
+      enrutador.push('/autenticacion/iniciar-sesion');
       return;
     }
 
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setCanResend(true);
+    const temporizador = setInterval(() => {
+      setTiempoRestante((anterior) => {
+        if (anterior <= 1) {
+          clearInterval(temporizador);
+          setPuedeReenviar(true);
           return 0;
         }
         // Permitir reenvío después de 1 minuto
-        if (prev === 240) {
-          setCanResend(true);
+        if (anterior === 240) {
+          setPuedeReenviar(true);
         }
-        return prev - 1;
+        return anterior - 1;
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [email, router]);
+    return () => clearInterval(temporizador);
+  }, [correo, enrutador]);
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  const formatearTiempo = (segundos: number) => {
+    const minutos = Math.floor(segundos / 60);
+    const segs = segundos % 60;
+    return `${minutos}:${segs.toString().padStart(2, '0')}`;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const manejarEnvio = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
+    setExito('');
 
-    if (!code || code.length !== 6) {
+    if (!codigo || codigo.length !== 6) {
       setError('Por favor ingresa un código de 6 dígitos');
       return;
     }
 
     try {
-      const isSuccess = await verifyCode(email, code);
-      if (isSuccess) {
-        router.push('/dashboard');
+      const exitoso = await verifyCode(correo, codigo);
+      if (exitoso) {
+        enrutador.push('/dashboard');
       }
     } catch (error: any) {
       if (error.response?.status === 400) {
-        const errorMessage = isEmailVerified
+        const mensajeError = correoVerificado
           ? 'Código de seguridad inválido o expirado'
           : 'Código de verificación inválido o expirado';
-        setError(errorMessage);
+        setError(mensajeError);
       } else {
         setError('Error al verificar el código. Inténtalo de nuevo.');
       }
     }
   };
 
-  const handleResendCode = async () => {
+  const manejarReenviarCodigo = async () => {
     setError('');
-    setSuccess('');
+    setExito('');
 
     try {
-      const isSuccess = await resendMFA(email);
-      if (isSuccess) {
-        const successMessage = isEmailVerified
+      const exitoso = await resendMFA(correo);
+      if (exitoso) {
+        const mensajeExito = correoVerificado
           ? 'Nuevo código de seguridad enviado'
           : 'Nuevo código de verificación enviado';
-        setSuccess(successMessage);
-        setTimeLeft(300); // Reiniciar timer a 5 minutos
-        setCanResend(false);
-        setCode(''); // Limpiar código anterior
+        setExito(mensajeExito);
+        setTiempoRestante(300); // Reiniciar timer a 5 minutos
+        setPuedeReenviar(false);
+        setCodigo(''); // Limpiar código anterior
       }
     } catch (error: any) {
       setError('Error al enviar el código. Inténtalo de nuevo.');
     }
   };
 
-  const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-    setCode(value);
+  const manejarCambioCodigo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const valor = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setCodigo(valor);
   };
 
-  if (!email) {
+  if (!correo) {
     return null;
   }
 
@@ -110,27 +110,27 @@ export default function VerifyCode() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
-            {isEmailVerified ? 'Código de Seguridad' : 'Verificar Email'}
+            {correoVerificado ? 'Código de Seguridad' : 'Verificar Correo'}
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            {isEmailVerified
+            {correoVerificado
               ? 'Por tu seguridad, ingresa el código enviado a'
-              : 'Para completar tu registro, verifica tu email con el código enviado a'
+              : 'Para completar tu registro, verifica tu correo con el código enviado a'
             }
           </p>
           <p className="font-medium text-blue-600 dark:text-blue-400">
-            {email}
+            {correo}
           </p>
 
-          {!isEmailVerified && (
+          {!correoVerificado && (
             <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-md">
               <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                ⚠️ Tu email aún no está verificado. Completa este paso para activar tu cuenta.
+                ⚠️ Tu correo aún no está verificado. Completa este paso para activar tu cuenta.
               </p>
             </div>
           )}
 
-          {isEmailVerified && (
+          {correoVerificado && (
             <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md">
               <p className="text-sm text-blue-800 dark:text-blue-200">
                 🔒 Autenticación de dos factores para proteger tu cuenta.
@@ -139,34 +139,34 @@ export default function VerifyCode() {
           )}
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={manejarEnvio}>
           <div>
-            <label htmlFor="code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {isEmailVerified ? 'Código de seguridad' : 'Código de verificación'}
+            <label htmlFor="codigo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {correoVerificado ? 'Código de seguridad' : 'Código de verificación'}
             </label>
             <input
-              id="code"
-              name="code"
+              id="codigo"
+              name="codigo"
               type="text"
               maxLength={6}
               required
               className="appearance-none relative block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center text-2xl font-mono tracking-widest"
               placeholder="123456"
-              value={code}
-              onChange={handleCodeChange}
+              value={codigo}
+              onChange={manejarCambioCodigo}
             />
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
-              {isEmailVerified
-                ? 'Código de seguridad de 6 dígitos enviado por email'
-                : 'Código de verificación de 6 dígitos enviado por email'
+              {correoVerificado
+                ? 'Código de seguridad de 6 dígitos enviado por correo'
+                : 'Código de verificación de 6 dígitos enviado por correo'
               }
             </p>
           </div>
 
           <div className="text-center">
-            {timeLeft > 0 ? (
+            {tiempoRestante > 0 ? (
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                El código expira en: <span className="font-mono text-blue-600 dark:text-blue-400">{formatTime(timeLeft)}</span>
+                El código expira en: <span className="font-mono text-blue-600 dark:text-blue-400">{formatearTiempo(tiempoRestante)}</span>
               </p>
             ) : (
               <p className="text-sm text-red-600">
@@ -179,19 +179,19 @@ export default function VerifyCode() {
             <div className="text-red-600 text-sm text-center">{error}</div>
           )}
 
-          {success && (
-            <div className="text-green-600 text-sm text-center">{success}</div>
+          {exito && (
+            <div className="text-green-600 text-sm text-center">{exito}</div>
           )}
 
           <div>
             <button
               type="submit"
-              disabled={isLoading || code.length !== 6}
+              disabled={isLoading || codigo.length !== 6}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading
-                ? (isEmailVerified ? 'Autenticando...' : 'Verificando...')
-                : (isEmailVerified ? 'Confirmar Acceso' : 'Verificar Email')
+                ? (correoVerificado ? 'Autenticando...' : 'Verificando...')
+                : (correoVerificado ? 'Confirmar Acceso' : 'Verificar Correo')
               }
             </button>
           </div>
@@ -202,17 +202,17 @@ export default function VerifyCode() {
             </p>
             <button
               type="button"
-              disabled={!canResend || isLoading}
+              disabled={!puedeReenviar || isLoading}
               className="font-medium text-blue-600 hover:text-blue-500 disabled:text-gray-400 disabled:cursor-not-allowed"
-              onClick={handleResendCode}
+              onClick={manejarReenviarCodigo}
             >
-              {canResend ? 'Reenviar código' : `Reenviar en ${formatTime(Math.max(0, 240 - (300 - timeLeft)))}`}
+              {puedeReenviar ? 'Reenviar código' : `Reenviar en ${formatearTiempo(Math.max(0, 240 - (300 - tiempoRestante)))}`}
             </button>
           </div>
 
           <div className="text-center">
             <Link
-              href="/auth/login"
+              href="/autenticacion/iniciar-sesion"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
               ← Volver al login

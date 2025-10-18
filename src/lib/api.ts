@@ -28,7 +28,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/auth/login';
+      window.location.href = '/autenticacion/iniciar-sesion';
     }
     return Promise.reject(error);
   }
@@ -62,6 +62,28 @@ export const authAPI = {
       apellido,
       correo,
       contrasenia,
+    });
+    return response.data;
+  },
+
+  forgotPassword: async (correo: string) => {
+    const response = await api.post('/auth/forgot-password', {
+      correo,
+    });
+    return response.data;
+  },
+
+  verifyResetCode: async (correo: string, codigoVerificacion: string) => {
+    const response = await api.post('/auth/verify-reset-code', {
+      correo,
+      codigoVerificacion,
+    });
+    return response.data;
+  },
+
+  resetPassword: async (correo: string, nuevaContrasenia: string) => {
+    const response = await api.post(`/auth/reset-password/${encodeURIComponent(correo)}`, {
+      nuevaContrasenia,
     });
     return response.data;
   },
