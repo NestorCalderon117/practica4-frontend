@@ -29,6 +29,12 @@ export default function Dashboard() {
                   {user?.nombreCompleto} ({user?.role})
                 </span>
                 <button
+                  onClick={() => router.push('/mi-cuenta')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                >
+                  Mi Cuenta
+                </button>
+                <button
                   onClick={handleLogout}
                   className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
                 >
@@ -61,6 +67,12 @@ export default function Dashboard() {
                     <p className="text-blue-700 dark:text-blue-300">
                       Rol: {user?.role}
                     </p>
+                    <button
+                      onClick={() => router.push('/mi-cuenta')}
+                      className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm w-full"
+                    >
+                      Ver Mi Cuenta
+                    </button>
                   </div>
 
                   {user?.role === 'ADMIN' && (
@@ -77,15 +89,18 @@ export default function Dashboard() {
                     </div>
                   )}
 
-                  <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      Configuración
+                  <div className="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-lg">
+                    <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100 mb-2">
+                      Seguridad
                     </h3>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Personaliza tu experiencia
+                    <p className="text-purple-700 dark:text-purple-300 mb-2">
+                      Gestiona tu seguridad y privacidad
                     </p>
-                    <button className="mt-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm">
-                      Configurar Perfil
+                    <button
+                      onClick={() => router.push('/mi-cuenta')}
+                      className="mt-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm w-full"
+                    >
+                      Configurar Seguridad
                     </button>
                   </div>
                 </div>
