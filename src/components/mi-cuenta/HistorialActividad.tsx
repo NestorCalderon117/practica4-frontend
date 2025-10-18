@@ -1,7 +1,22 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, ReactElement } from 'react';
 import { miCuentaAPI } from '@/lib/api';
+import {
+  Unlock,
+  CheckCircle,
+  XCircle,
+  User,
+  Lock,
+  Mail,
+  CheckSquare,
+  DoorOpen,
+  Ban,
+  Smartphone,
+  MapPin,
+  Globe,
+  Info
+} from 'lucide-react';
 
 interface Actividad {
   id: string;
@@ -37,20 +52,20 @@ export default function HistorialActividad() {
     cargarHistorial();
   }, [cargarHistorial]);
 
-  const obtenerIconoTipo = (tipo: string): string => {
-    const iconos: Record<string, string> = {
-      LOGIN: '🔓',
-      MFA_SUCCESS: '✅',
-      MFA_FAILED: '❌',
-      PROFILE_UPDATE: '👤',
-      PASSWORD_CHANGE: '🔒',
-      EMAIL_CHANGE: '📧',
-      EMAIL_VERIFIED: '✓',
-      SESSION_TERMINATED: '🚪',
-      ALL_SESSIONS_TERMINATED: '🚫',
-      MFA_REENROLL: '📱',
+  const obtenerIconoTipo = (tipo: string) => {
+    const iconos: Record<string, ReactElement> = {
+      LOGIN: <Unlock className="w-5 h-5" />,
+      MFA_SUCCESS: <CheckCircle className="w-5 h-5" />,
+      MFA_FAILED: <XCircle className="w-5 h-5" />,
+      PROFILE_UPDATE: <User className="w-5 h-5" />,
+      PASSWORD_CHANGE: <Lock className="w-5 h-5" />,
+      EMAIL_CHANGE: <Mail className="w-5 h-5" />,
+      EMAIL_VERIFIED: <CheckSquare className="w-5 h-5" />,
+      SESSION_TERMINATED: <DoorOpen className="w-5 h-5" />,
+      ALL_SESSIONS_TERMINATED: <Ban className="w-5 h-5" />,
+      MFA_REENROLL: <Smartphone className="w-5 h-5" />,
     };
-    return iconos[tipo] || '📝';
+    return iconos[tipo] || <User className="w-5 h-5" />;
   };
 
   const obtenerColorTipo = (tipo: string): string => {
@@ -157,7 +172,7 @@ export default function HistorialActividad() {
             >
               <div className="flex items-start gap-3">
                 <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${obtenerColorTipo(actividad.tipo)}`}>
-                  <span className="text-xl">{obtenerIconoTipo(actividad.tipo)}</span>
+                  {obtenerIconoTipo(actividad.tipo)}
                 </div>
 
                 <div className="flex-1 min-w-0">
@@ -179,13 +194,13 @@ export default function HistorialActividad() {
                     <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400">
                       {actividad.ipAddress && (
                         <span className="flex items-center gap-1">
-                          <span>📍</span>
+                          <MapPin className="w-3 h-3" />
                           {actividad.ipAddress}
                         </span>
                       )}
                       {actividad.userAgent && (
                         <span className="flex items-center gap-1">
-                          <span>🌐</span>
+                          <Globe className="w-3 h-3" />
                           {actividad.userAgent.includes('Chrome') ? 'Chrome' :
                            actividad.userAgent.includes('Firefox') ? 'Firefox' :
                            actividad.userAgent.includes('Safari') ? 'Safari' :
@@ -213,8 +228,9 @@ export default function HistorialActividad() {
       )}
 
       <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md">
-        <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
-          ℹ️ Información:
+        <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2 flex items-center gap-2">
+          <Info className="w-4 h-4" />
+          Información:
         </h3>
         <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
           <li>• Se registran todas las actividades importantes de tu cuenta</li>

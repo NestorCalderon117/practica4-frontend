@@ -2,6 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { miCuentaAPI } from '@/lib/api';
+import {
+  Monitor,
+  Laptop,
+  Smartphone as SmartphoneIcon,
+  Globe as GlobeIcon,
+  MapPin,
+  Clock,
+  Calendar,
+  Timer,
+  Lightbulb
+} from 'lucide-react';
 
 interface Sesion {
   id: string;
@@ -107,13 +118,22 @@ export default function GestionSesiones() {
     });
   };
 
+  const obtenerIconoDispositivo = (userAgent: string) => {
+    if (userAgent.includes('Windows')) return <Monitor className="w-6 h-6" />;
+    if (userAgent.includes('Mac')) return <Laptop className="w-6 h-6" />;
+    if (userAgent.includes('Linux')) return <Monitor className="w-6 h-6" />;
+    if (userAgent.includes('Android')) return <SmartphoneIcon className="w-6 h-6" />;
+    if (userAgent.includes('iOS') || userAgent.includes('iPhone')) return <SmartphoneIcon className="w-6 h-6" />;
+    return <GlobeIcon className="w-6 h-6" />;
+  };
+
   const obtenerNombreDispositivo = (userAgent: string) => {
-    if (userAgent.includes('Windows')) return '💻 Windows';
-    if (userAgent.includes('Mac')) return '🖥️ Mac';
-    if (userAgent.includes('Linux')) return '🐧 Linux';
-    if (userAgent.includes('Android')) return '📱 Android';
-    if (userAgent.includes('iOS') || userAgent.includes('iPhone')) return '📱 iPhone';
-    return '🌐 Navegador';
+    if (userAgent.includes('Windows')) return 'Windows';
+    if (userAgent.includes('Mac')) return 'Mac';
+    if (userAgent.includes('Linux')) return 'Linux';
+    if (userAgent.includes('Android')) return 'Android';
+    if (userAgent.includes('iOS') || userAgent.includes('iPhone')) return 'iPhone';
+    return 'Navegador';
   };
 
   const obtenerNombreNavegador = (userAgent: string) => {
@@ -184,12 +204,12 @@ export default function GestionSesiones() {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">
-                      {obtenerNombreDispositivo(sesion.userAgent)}
-                    </span>
+                    <div className="text-gray-600 dark:text-gray-400">
+                      {obtenerIconoDispositivo(sesion.userAgent)}
+                    </div>
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {obtenerNombreNavegador(sesion.userAgent)}
+                        {obtenerNombreDispositivo(sesion.userAgent)} - {obtenerNombreNavegador(sesion.userAgent)}
                       </h3>
                       {sesion.id === sesionActualId && (
                         <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
@@ -201,20 +221,20 @@ export default function GestionSesiones() {
 
                   <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
                     <div className="flex items-center gap-2">
-                      <span>📍</span>
+                      <MapPin className="w-4 h-4" />
                       <span>IP: {sesion.ipAddress}</span>
                       {sesion.ubicacion && <span>• {sesion.ubicacion}</span>}
                     </div>
                     <div className="flex items-center gap-2">
-                      <span>🕐</span>
+                      <Clock className="w-4 h-4" />
                       <span>Última actividad: {formatearFecha(sesion.ultimaActividad)}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span>📅</span>
+                      <Calendar className="w-4 h-4" />
                       <span>Creada: {formatearFecha(sesion.creada)}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span>⏰</span>
+                      <Timer className="w-4 h-4" />
                       <span>Expira: {formatearFecha(sesion.expiraEn)}</span>
                     </div>
                   </div>
@@ -236,8 +256,9 @@ export default function GestionSesiones() {
       )}
 
       <div className="mt-6 bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-md">
-        <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">
-          💡 Consejos de seguridad:
+        <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2 flex items-center gap-2">
+          <Lightbulb className="w-4 h-4" />
+          Consejos de seguridad:
         </h3>
         <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
           <li>• Revisa regularmente tus sesiones activas</li>

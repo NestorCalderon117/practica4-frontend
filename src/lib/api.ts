@@ -241,3 +241,107 @@ export const ticketsAPI = {
     return response.data;
   },
 };
+
+export const administracionAPI = {
+  // Gestión de Usuarios
+  crearUsuario: async (
+    nombre: string,
+    apellido: string,
+    correo: string,
+    contrasenia: string,
+    rol?: string
+  ) => {
+    const response = await api.post('/admin/users', {
+      nombre,
+      apellido,
+      correo,
+      contrasenia,
+      rol,
+    });
+    return response.data;
+  },
+
+  obtenerUsuarios: async (filtros?: {
+    rol?: string;
+    estaActivo?: boolean;
+    search?: string;
+    limit?: number;
+    offset?: number;
+  }) => {
+    const params = new URLSearchParams();
+    if (filtros?.rol) params.append('rol', filtros.rol);
+    if (filtros?.estaActivo !== undefined) params.append('estaActivo', filtros.estaActivo.toString());
+    if (filtros?.search) params.append('search', filtros.search);
+    if (filtros?.limit) params.append('limit', filtros.limit.toString());
+    if (filtros?.offset) params.append('offset', filtros.offset.toString());
+
+    const queryString = params.toString();
+    const response = await api.get(`/admin/users${queryString ? `?${queryString}` : ''}`);
+    return response.data;
+  },
+
+  obtenerUsuario: async (id: string) => {
+    const response = await api.get(`/admin/users/${id}`);
+    return response.data;
+  },
+
+  actualizarUsuario: async (
+    id: string,
+    datos: {
+      nombre?: string;
+      apellido?: string;
+      rol?: string;
+      estaActivo?: boolean;
+    }
+  ) => {
+    const response = await api.put(`/admin/users/${id}`, datos);
+    return response.data;
+  },
+
+  bloquearUsuario: async (id: string, razon: string, duracion?: string) => {
+    const response = await api.put(`/admin/users/${id}/block`, {
+      razon,
+      duracion,
+    });
+    return response.data;
+  },
+
+  desbloquearUsuario: async (id: string) => {
+    const response = await api.put(`/admin/users/${id}/unblock`);
+    return response.data;
+  },
+
+  resetearMFA: async (id: string) => {
+    const response = await api.put(`/admin/users/${id}/reset-mfa`);
+    return response.data;
+  },
+
+  // Auditoría
+  obtenerAuditoria: async (filtros?: {
+    tipo?: string;
+    usuarioId?: string;
+    adminId?: string;
+    fechaDesde?: string;
+    fechaHasta?: string;
+    limit?: number;
+    offset?: number;
+  }) => {
+    const params = new URLSearchParams();
+    if (filtros?.tipo) params.append('tipo', filtros.tipo);
+    if (filtros?.usuarioId) params.append('usuarioId', filtros.usuarioId);
+    if (filtros?.adminId) params.append('adminId', filtros.adminId);
+    if (filtros?.fechaDesde) params.append('fechaDesde', filtros.fechaDesde);
+    if (filtros?.fechaHasta) params.append('fechaHasta', filtros.fechaHasta);
+    if (filtros?.limit) params.append('limit', filtros.limit.toString());
+    if (filtros?.offset) params.append('offset', filtros.offset.toString());
+
+    const queryString = params.toString();
+    const response = await api.get(`/admin/audit${queryString ? `?${queryString}` : ''}`);
+    return response.data;
+  },
+
+  obtenerEstadisticasAuditoria: async () => {
+    const response = await api.get('/admin/audit/stats');
+    return response.data;
+  },
+};

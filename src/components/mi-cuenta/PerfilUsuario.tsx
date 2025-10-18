@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { miCuentaAPI } from '@/lib/api';
+import { CheckCircle, AlertTriangle } from 'lucide-react';
 
 interface Usuario {
   id: string;
@@ -255,8 +256,9 @@ export default function PerfilUsuario() {
               disabled={estaCargando}
             />
             {correo !== correoOriginal && (
-              <p className="mt-1 text-sm text-yellow-600 dark:text-yellow-400">
-                ⚠️ Se enviará un código de verificación al nuevo correo
+              <p className="mt-1 text-sm text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
+                <AlertTriangle className="w-4 h-4" />
+                Se enviará un código de verificación al nuevo correo
               </p>
             )}
           </div>
@@ -316,7 +318,10 @@ export default function PerfilUsuario() {
             <p className="text-gray-900 dark:text-white flex items-center gap-2">
               {perfil?.correo}
               {perfil?.correoVerificado && (
-                <span className="text-green-600 dark:text-green-400 text-sm">✓ Verificado</span>
+                <span className="text-green-600 dark:text-green-400 text-sm flex items-center gap-1">
+                  <CheckCircle className="w-4 h-4" />
+                  Verificado
+                </span>
               )}
             </p>
           </div>

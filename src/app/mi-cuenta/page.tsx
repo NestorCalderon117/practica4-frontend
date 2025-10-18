@@ -6,15 +6,16 @@ import PerfilUsuario from '@/components/mi-cuenta/PerfilUsuario';
 import CambiarContrasenia from '@/components/mi-cuenta/CambiarContrasenia';
 import GestionSesiones from '@/components/mi-cuenta/GestionSesiones';
 import HistorialActividad from '@/components/mi-cuenta/HistorialActividad';
+import { User, Key, Monitor, ClipboardList } from 'lucide-react';
 
 export default function MiCuenta() {
   const [seccionActiva, setSeccionActiva] = useState<'perfil' | 'contrasenia' | 'sesiones' | 'historial'>('perfil');
 
   const secciones = [
-    { id: 'perfil' as const, nombre: 'Mi Perfil', icono: '👤' },
-    { id: 'contrasenia' as const, nombre: 'Cambiar Contraseña', icono: '🔒' },
-    { id: 'sesiones' as const, nombre: 'Sesiones Activas', icono: '🖥️' },
-    { id: 'historial' as const, nombre: 'Historial de Actividad', icono: '📋' },
+    { id: 'perfil' as const, nombre: 'Mi Perfil', icono: User },
+    { id: 'contrasenia' as const, nombre: 'Cambiar Contraseña', icono: Key },
+    { id: 'sesiones' as const, nombre: 'Sesiones Activas', icono: Monitor },
+    { id: 'historial' as const, nombre: 'Historial de Actividad', icono: ClipboardList },
   ];
 
   return (
@@ -34,20 +35,23 @@ export default function MiCuenta() {
             {/* Navegación lateral */}
             <div className="lg:col-span-1">
               <nav className="space-y-1 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                {secciones.map((seccion) => (
-                  <button
-                    key={seccion.id}
-                    onClick={() => setSeccionActiva(seccion.id)}
-                    className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors ${
-                      seccionActiva === seccion.id
-                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    <span className="mr-3 text-xl">{seccion.icono}</span>
-                    {seccion.nombre}
-                  </button>
-                ))}
+                {secciones.map((seccion) => {
+                  const IconComponent = seccion.icono;
+                  return (
+                    <button
+                      key={seccion.id}
+                      onClick={() => setSeccionActiva(seccion.id)}
+                      className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors ${
+                        seccionActiva === seccion.id
+                          ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      <IconComponent className="mr-3 w-5 h-5" />
+                      {seccion.nombre}
+                    </button>
+                  );
+                })}
               </nav>
             </div>
 

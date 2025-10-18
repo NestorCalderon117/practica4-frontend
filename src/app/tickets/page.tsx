@@ -4,6 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { ticketsAPI } from '@/lib/api';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Link from 'next/link';
+import {
+  Plus,
+  Clock,
+  CheckCircle,
+  ArrowRight
+} from 'lucide-react';
 
 interface Ticket {
   id: string;
@@ -196,9 +202,10 @@ function TicketsPage() {
             </div>
             <button
               onClick={() => setMostrarFormularioNuevo(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
             >
-              + Nuevo Ticket
+              <Plus className="w-4 h-4" />
+              Nuevo Ticket
             </button>
           </div>
 
@@ -362,18 +369,20 @@ function TicketsPage() {
                         {formatearCategoria(ticket.categoria)}
                       </span>
                       <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                        🕐 {formatearFecha(ticket.creado)}
+                        <Clock className="w-3 h-3" />
+                        {formatearFecha(ticket.creado)}
                       </span>
                       {ticket.cerrado && (
                         <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                          ✓ Cerrado: {formatearFecha(ticket.cerrado)}
+                          <CheckCircle className="w-3 h-3" />
+                          Cerrado: {formatearFecha(ticket.cerrado)}
                         </span>
                       )}
                     </div>
                   </div>
 
                   <div className="ml-4 text-gray-400">
-                    →
+                    <ArrowRight className="w-5 h-5" />
                   </div>
                 </div>
               </Link>
