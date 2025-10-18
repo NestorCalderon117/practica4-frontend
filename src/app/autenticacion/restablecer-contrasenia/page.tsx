@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { authAPI } from '@/lib/api';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import PublicRoute from '@/components/PublicRoute';
 
-export default function RestablecerContrasenia() {
+function RestablecerContraseniaContent() {
   const [correo, setCorreo] = useState('');
   const [contrasenia, setContrasenia] = useState('');
   const [confirmarContrasenia, setConfirmarContrasenia] = useState('');
@@ -56,8 +56,11 @@ export default function RestablecerContrasenia() {
           enrutador.push('/autenticacion/iniciar-sesion');
         }, 2000);
       }
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Error al actualizar la contraseña');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message 
+        : 'Error al actualizar la contraseña';
+      setError(errorMessage || 'Error al actualizar la contraseña');
     } finally {
       setEstaCargando(false);
     }
@@ -172,5 +175,20 @@ export default function RestablecerContrasenia() {
         </div>
       </div>
     </PublicRoute>
+  );
+}
+
+export default function RestablecerContrasenia() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando...</p>
+        </div>
+      </div>
+    }>
+      <RestablecerContraseniaContent />
+    </Suspense>
   );
 }

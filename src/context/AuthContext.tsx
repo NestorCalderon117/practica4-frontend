@@ -93,13 +93,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         isEmailVerified: false,
         message: 'Error en el login'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message 
+        : 'Error de conexión';
       return {
         needsVerification: false,
         email: '',
         isEmailVerified: false,
-        message: error.response?.data?.message || 'Error de conexión'
+        message: errorMessage || 'Error de conexión'
       };
     } finally {
       setIsLoading(false);
@@ -130,7 +133,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       return false;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Verify code error:', error);
 
       // El error específico se manejará en la página de verificación
@@ -180,15 +183,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         isEmailVerified: false,
         message: 'Error en el registro'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Register error:', error);
 
-      if (error.response?.status === 409) {
+      if (error instanceof Error && 'response' in error) {
+        const axiosError = error as { response?: { status?: number; data?: { message?: string } } };
+        if (axiosError.response?.status === 409) {
+          return {
+            needsVerification: false,
+            email: '',
+            isEmailVerified: false,
+            message: 'Este correo ya está registrado. Por favor inicia sesión.'
+          };
+        }
+
         return {
           needsVerification: false,
           email: '',
           isEmailVerified: false,
-          message: 'Este correo ya está registrado. Por favor inicia sesión.'
+          message: axiosError.response?.data?.message || 'Error de conexión'
         };
       }
 
@@ -196,7 +209,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         needsVerification: false,
         email: '',
         isEmailVerified: false,
-        message: error.response?.data?.message || 'Error de conexión'
+        message: 'Error de conexión'
       };
     } finally {
       setIsLoading(false);

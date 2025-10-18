@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import PublicRoute from '@/components/PublicRoute';
 
-export default function Verificar() {
+function VerificarContent() {
   const [codigo, setCodigo] = useState('');
   const [error, setError] = useState('');
   const [exito, setExito] = useState('');
@@ -63,12 +63,17 @@ export default function Verificar() {
       if (exitoso) {
         enrutador.push('/dashboard');
       }
-    } catch (error: any) {
-      if (error.response?.status === 400) {
-        const mensajeError = correoVerificado
-          ? 'Código de seguridad inválido o expirado'
-          : 'Código de verificación inválido o expirado';
-        setError(mensajeError);
+    } catch (error: unknown) {
+      if (error instanceof Error && 'response' in error) {
+        const axiosError = error as { response?: { status?: number } };
+        if (axiosError.response?.status === 400) {
+          const mensajeError = correoVerificado
+            ? 'Código de seguridad inválido o expirado'
+            : 'Código de verificación inválido o expirado';
+          setError(mensajeError);
+        } else {
+          setError('Error al verificar el código. Inténtalo de nuevo.');
+        }
       } else {
         setError('Error al verificar el código. Inténtalo de nuevo.');
       }
@@ -90,7 +95,7 @@ export default function Verificar() {
         setPuedeReenviar(false);
         setCodigo(''); // Limpiar código anterior
       }
-    } catch (error: any) {
+    } catch {
       setError('Error al enviar el código. Inténtalo de nuevo.');
     }
   };
@@ -222,5 +227,20 @@ export default function Verificar() {
       </div>
       </div>
     </PublicRoute>
+  );
+}
+
+export default function Verificar() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando...</p>
+        </div>
+      </div>
+    }>
+      <VerificarContent />
+    </Suspense>
   );
 }

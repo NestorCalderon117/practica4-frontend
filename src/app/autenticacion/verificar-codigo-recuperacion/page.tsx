@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { authAPI } from '@/lib/api';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import PublicRoute from '@/components/PublicRoute';
 
-export default function VerificarCodigoRecuperacion() {
+function VerificarCodigoRecuperacionContent() {
   const [correo, setCorreo] = useState('');
   const [codigo, setCodigo] = useState('');
   const [error, setError] = useState('');
@@ -48,8 +48,11 @@ export default function VerificarCodigoRecuperacion() {
           enrutador.push(`/autenticacion/restablecer-contrasenia?correo=${encodeURIComponent(correo)}`);
         }, 1000);
       }
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Código de verificación inválido o expirado');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message 
+        : 'Código de verificación inválido o expirado';
+      setError(errorMessage || 'Código de verificación inválido o expirado');
     } finally {
       setEstaCargando(false);
     }
@@ -71,8 +74,11 @@ export default function VerificarCodigoRecuperacion() {
       if (respuesta.statusCode === 200) {
         setExito('Se ha enviado un nuevo código a tu correo');
       }
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Error al reenviar el código');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message 
+        : 'Error al reenviar el código';
+      setError(errorMessage || 'Error al reenviar el código');
     } finally {
       setEstaCargando(false);
     }
@@ -180,5 +186,20 @@ export default function VerificarCodigoRecuperacion() {
         </div>
       </div>
     </PublicRoute>
+  );
+}
+
+export default function VerificarCodigoRecuperacion() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando...</p>
+        </div>
+      </div>
+    }>
+      <VerificarCodigoRecuperacionContent />
+    </Suspense>
   );
 }
